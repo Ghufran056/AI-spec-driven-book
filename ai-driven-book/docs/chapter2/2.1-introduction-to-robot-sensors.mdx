@@ -1,0 +1,137 @@
+---
+id: 2.1-introduction-to-robot-sensors
+title: Introduction to Robot Sensors
+sidebar_label: 2.1 - Introduction to Robot Sensors
+---
+
+# Introduction to Robot Sensors
+
+## Learning Objectives
+
+By the end of this lesson, you will be able to:
+- Identify the main categories of sensors used in robotics
+- Understand the purpose of sensors in enabling robot perception
+- Recognize how different sensors complement each other
+- Explain the relationship between sensors and robot intelligence
+
+## Introduction
+
+Sensors are the eyes, ears, and skin of robots. They allow robots to perceive and interact with the physical world around them. Without sensors, robots would be blind and deaf, unable to navigate, manipulate objects, or respond to their environment. In this lesson, we'll explore the fundamental types of sensors used in robotics and understand how they enable robots to make intelligent decisions.
+
+Robot sensors can be thought of as the bridge between the physical world and the robot's computational system. They convert physical phenomena—like light, sound, pressure, or magnetic fields—into electrical signals that the robot can process and interpret. This process of sensing and interpretation is fundamental to physical AI, as it allows robots to understand and interact with their environment.
+
+## How it Works
+
+### 1. Range Sensors
+Range sensors measure distances to objects in the environment. These include ultrasonic sensors, infrared sensors, and LIDAR systems. They're essential for navigation, obstacle detection, and mapping.
+
+### 2. Visual Sensors
+Cameras and other optical sensors capture visual information from the environment. They enable robots to recognize objects, read signs, detect colors, and understand visual scenes.
+
+### 3. Inertial Sensors
+Inertial Measurement Units (IMUs) contain accelerometers and gyroscopes that measure motion, orientation, and gravitational forces. They help robots maintain balance and understand their movement in 3D space.
+
+### 4. Tactile Sensors
+These sensors detect touch, pressure, and force. They're crucial for manipulation tasks where robots need to interact with objects with appropriate force and precision.
+
+### 5. Proprioceptive Sensors
+These internal sensors monitor the robot's own state, such as joint angles, motor positions, and internal temperatures. They provide feedback about the robot's configuration and health.
+
+### 6. Environmental Sensors
+These include sensors for temperature, humidity, gas detection, and other environmental conditions that might be relevant to the robot's task.
+
+## Simple Diagrams
+
+```
+Robot Sensor Ecosystem:
+
+[Environment] → [Range Sensors] → [Data Processing] ← [Visual Sensors] ← [Environment]
+                    ↓                    ↓                    ↓
+              [Obstacle Map]       [Object Recognition]  [Scene Understanding]
+                    ↓                    ↓                    ↓
+              [Navigation]       [Manipulation]        [Interaction]
+```
+
+```
+Sensor Hierarchy in Robotics:
+
+Physical World
+     ↓
+Sensors (Range, Visual, Inertial, Tactile, etc.)
+     ↓
+Signal Processing
+     ↓
+Data Fusion
+     ↓
+Perception System
+     ↓
+Decision Making
+     ↓
+Action Execution
+```
+
+## Real-world Examples
+
+### Autonomous Vehicles
+Self-driving cars use a combination of cameras, LIDAR, radar, and ultrasonic sensors to perceive their environment. Each sensor type provides different information: cameras for traffic signs and lane markings, LIDAR for precise distance measurements, radar for detecting objects in poor weather, and ultrasonic sensors for close-range detection during parking.
+
+### Industrial Robots
+Assembly robots use vision systems to locate parts, force/torque sensors to apply appropriate pressure when assembling components, and encoders to track joint positions with high precision. This sensor combination allows them to perform complex manipulation tasks reliably.
+
+### Service Robots
+Robots like vacuum cleaners use cliff sensors to avoid falling down stairs, bump sensors to detect obstacles, and wheel encoders to track their movement. More advanced service robots add cameras and microphones for human interaction.
+
+## Summary
+
+Robot sensors form the foundation of robotic perception and are essential for any robot that needs to interact with the physical world. Different sensor types provide complementary information that, when combined, give robots a comprehensive understanding of their environment and their own state. The choice of sensors depends on the robot's intended application and the specific challenges of its operating environment.
+
+Understanding the different types of sensors and their capabilities is crucial for developing effective robotic systems. As we'll see in later lessons, the real power comes from combining multiple sensor types through sensor fusion techniques.
+
+## Glossary
+
+- **Range Sensors**: Sensors that measure distances to objects in the environment
+- **Visual Sensors**: Cameras and optical sensors that capture visual information
+- **Inertial Sensors**: Sensors that measure motion, orientation, and gravitational forces
+- **Tactile Sensors**: Sensors that detect touch, pressure, and force
+- **Proprioceptive Sensors**: Internal sensors that monitor the robot's own state
+- **Sensor Fusion**: The process of combining data from multiple sensors to create a more accurate understanding
+- **Perception System**: The combination of sensors and algorithms that enable a robot to understand its environment
+
+## Quick Quiz
+
+1. What is the primary purpose of sensors in robotics?
+   A) To make robots look more human-like
+   B) To enable robots to perceive and interact with the physical world
+   C) To reduce the computational requirements of robots
+   D) To make robots move faster
+
+2. Which type of sensors help robots maintain balance and understand their movement in 3D space?
+   A) Range sensors
+   B) Visual sensors
+   C) Inertial sensors
+   D) Tactile sensors
+
+3. What are proprioceptive sensors used for?
+   A) Detecting objects in the environment
+   B) Monitoring the robot's own internal state
+   C) Communicating with other robots
+   D) Storing data about previous tasks
+
+4. Which of the following is NOT a category of robot sensors mentioned in this lesson?
+   A) Environmental sensors
+   B) Visual sensors
+   C) Cognitive sensors
+   D) Tactile sensors
+
+5. What is sensor fusion?
+   A) Melting sensors together for better performance
+   B) Combining data from multiple sensors for better understanding
+   C) Using only one type of sensor for all tasks
+   D) Sharing sensor data between different robots
+
+**Answers:**
+1. B) To enable robots to perceive and interact with the physical world
+2. C) Inertial sensors
+3. B) Monitoring the robot's own internal state
+4. C) Cognitive sensors
+5. B) Combining data from multiple sensors for better understanding

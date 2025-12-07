@@ -249,3 +249,4 @@ With multiple developers:
 - Commit after each task or logical group
 - Stop at any checkpoint to validate story independently
 - Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
+- For tasks related to creating new lessons or chapters, ensure tasks account for all constitution requirements: introduction, explanations, diagrams, examples, summary, glossary, MCQ quiz, Docusaurus compatibility, content uniqueness, and consistent tone/accuracy.

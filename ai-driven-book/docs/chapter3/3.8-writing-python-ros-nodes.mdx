@@ -1,0 +1,204 @@
+---
+id: 3.8-writing-python-ros-nodes
+title: Writing Python ROS Nodes
+sidebar_label: 3.8 - Writing Python ROS Nodes
+---
+
+# Writing Python ROS Nodes
+
+## Learning Objectives
+
+By the end of this lesson, you will be able to:
+- Create basic ROS nodes in Python using rclpy
+- Implement publishers and subscribers in Python nodes
+- Create and use services and actions in Python
+- Handle parameters in Python ROS nodes
+- Structure Python packages for ROS 2 nodes
+- Use ROS 2 client library features in Python
+
+## Introduction
+
+Python is one of the most popular languages for robotics development due to its simplicity, extensive libraries, and strong community support. The rclpy package provides the Python client library for ROS 2, enabling developers to create nodes that participate in the ROS 2 communication system. Writing Python nodes follows a straightforward pattern that allows developers to focus on their robot's specific functionality while leveraging the powerful ROS 2 communication infrastructure for message passing, services, and parameter management.
+
+The Python client library (rclpy) provides a clean, Pythonic interface to the ROS 2 system, making it accessible to both robotics experts and Python developers who are new to robotics. Python nodes integrate seamlessly with nodes written in other languages like C++, allowing for mixed-language robot systems where each component can be written in the most appropriate language for its specific requirements.
+
+## Main Theory
+
+### 1. Node Structure
+Python ROS nodes are typically structured as classes that inherit from rclpy.node.Node. The node class constructor initializes the node with a name, and the class can contain publishers, subscribers, services, and other ROS components.
+
+### 2. Publisher Implementation
+Publishers are created using the create_publisher() method, specifying the message type, topic name, and queue size. Messages are sent using the publish() method, with the message object containing the data to be transmitted.
+
+### 3. Subscriber Implementation
+Subscribers are created using the create_subscription() method, specifying the message type, topic name, callback function, and queue size. The callback function is executed when messages arrive on the subscribed topic.
+
+### 4. Service Server Implementation
+Service servers are created using the create_service() method, specifying the service type, service name, and callback function. The callback processes the request and returns a response.
+
+### 5. Parameter Handling
+Parameters can be declared using declare_parameter() and accessed using get_parameter(). This allows nodes to be configured at runtime without recompilation.
+
+### 6. Node Lifecycle
+Python nodes are initialized using rclpy.init(), added to an executor, and then spun to process callbacks. The node continues running until it's explicitly shut down.
+
+```
+Python Node Structure:
+
+[rclpy.init()] → [Node Creation] → [Component Setup] → [Executor Spin] → [Shutdown]
+
+Basic Node Skeleton:
+import rclpy
+from rclpy.node import Node
+
+class MyNode(Node):
+    def __init__(self):
+        super().__init__('node_name')
+        # Setup publishers, subscribers, etc.
+
+    def callback_function(self, msg):
+        # Process received message
+        pass
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = MyNode()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
+```
+
+## Examples
+
+### Example: Simple Publisher Node
+```python
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String
+
+class TalkerNode(Node):
+    def __init__(self):
+        super().__init__('talker')
+        self.publisher = self.create_publisher(String, 'topic', 10)
+        timer_period = 0.5  # seconds
+        self.timer = self.create_timer(timer_period, self.timer_callback)
+
+    def timer_callback(self):
+        msg = String()
+        msg.data = 'Hello World: %d' % self.get_clock().now().nanoseconds
+        self.publisher.publish(msg)
+        self.get_logger().info('Publishing: "%s"' % msg.data)
+
+def main(args=None):
+    rclpy.init(args=args)
+    talker = TalkerNode()
+    rclpy.spin(talker)
+    talker.destroy_node()
+    rclpy.shutdown()
+```
+
+### Example: Simple Subscriber Node
+```python
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String
+
+class ListenerNode(Node):
+    def __init__(self):
+        super().__init__('listener')
+        self.subscription = self.create_subscription(
+            String,
+            'topic',
+            self.listener_callback,
+            10)
+        self.subscription  # prevent unused variable warning
+
+    def listener_callback(self, msg):
+        self.get_logger().info('I heard: "%s"' % msg.data)
+
+def main(args=None):
+    rclpy.init(args=args)
+    listener = ListenerNode()
+    rclpy.spin(listener)
+    listener.destroy_node()
+    rclpy.shutdown()
+```
+
+### Example: Parameter Usage
+```python
+def __init__(self):
+    super().__init__('param_node')
+    # Declare parameter with default value
+    self.declare_parameter('frequency', 1.0)
+    freq = self.get_parameter('frequency').value
+    self.timer = self.create_timer(1.0/freq, self.timer_callback)
+```
+
+## Practical Notes
+
+- Always call super().__init__() with a unique node name in your custom node's __init__ method
+- Use self.get_logger().info() for logging messages instead of print()
+- Remember to destroy the node and shutdown rclpy in your main function
+- Set appropriate queue sizes for publishers and subscribers based on message frequency
+- Use try-except blocks around rclpy.init() and spin() for graceful error handling
+- Declare parameters with default values to make nodes more configurable
+- Use appropriate data types from standard message packages when possible
+
+## Summary
+
+Writing Python ROS nodes is straightforward with the rclpy client library, which provides clean interfaces for all ROS 2 communication patterns. By structuring nodes as classes inheriting from rclpy.node.Node, developers can easily implement publishers, subscribers, services, and parameter handling. The Python ecosystem combined with ROS 2's communication infrastructure enables rapid development and prototyping of robot systems, while the seamless integration with other language nodes allows for complex, multi-component robot applications.
+
+## Glossary
+
+- **rclpy**: Python client library for ROS 2 that provides Python bindings to the ROS 2 system
+- **Node**: Basic execution unit in ROS that performs computation and communicates with other nodes
+- **Publisher**: Object that sends messages to a topic in a ROS node
+- **Subscriber**: Object that receives messages from a topic in a ROS node
+- **Callback**: Function executed when a message is received by a subscriber or service request is received
+- **Message**: Data structure exchanged between nodes through topics
+- **Topic**: Named bus over which nodes exchange messages using publish-subscribe pattern
+- **Service**: Synchronous request-response communication pattern between nodes
+- **Parameter**: Configurable value that can be set at runtime to change node behavior
+- **Executor**: Component that manages the execution of callbacks in ROS nodes
+- **Clock**: ROS component that provides time information for synchronization
+- **Logger**: Component that provides logging functionality for debugging and monitoring
+- **Queue Size**: Maximum number of messages to buffer for publishers and subscribers
+
+## Quick Quiz
+
+1. What is the main Python client library for ROS 2?
+   A) rospy
+   B) rclpy
+   C) roslib
+   D) pyros
+
+2. How do you properly initialize a ROS 2 node in Python?
+   A) node.init('node_name')
+   B) rclpy.start('node_name')
+   C) super().__init__('node_name')
+   D) rclpy.create_node('node_name')
+
+3. Which method is used to create a publisher in a Python ROS node?
+   A) create_pub()
+   B) make_publisher()
+   C) create_publisher()
+   D) add_publisher()
+
+4. What is the purpose of the rclpy.spin() function?
+   A) To compile the code
+   B) To process callbacks and keep the node running
+   C) To stop the node
+   D) To create a new thread
+
+5. How should you handle logging in a Python ROS node?
+   A) Use print() statements
+   B) Use self.get_logger().info()
+   C) Write to a file directly
+   D) Use sys.stdout.write()
+
+**Answers:**
+1. B) rclpy
+2. C) super().__init__('node_name')
+3. C) create_publisher()
+4. B) To process callbacks and keep the node running
+5. B) Use self.get_logger().info()

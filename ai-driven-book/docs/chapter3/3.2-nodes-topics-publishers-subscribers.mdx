@@ -1,0 +1,133 @@
+---
+id: 3.2-nodes-topics-publishers-subscribers
+title: Nodes, Topics, Publishers, Subscribers
+sidebar_label: 3.2 - Nodes, Topics, Publishers, Subscribers
+---
+
+# Nodes, Topics, Publishers, Subscribers
+
+## Learning Objectives
+
+By the end of this lesson, you will be able to:
+- Define nodes and explain their role in ROS 2 architecture
+- Understand the publish-subscribe communication pattern
+- Describe the functions of publishers and subscribers
+- Create simple publisher and subscriber nodes in ROS 2
+- Explain how topics facilitate communication between nodes
+
+## Introduction
+
+In ROS 2, the publish-subscribe pattern forms the backbone of inter-node communication. Nodes communicate by exchanging messages through topics, with publishers sending data and subscribers receiving it. This decoupled communication model allows for flexible, scalable robot systems where nodes can be developed, deployed, and maintained independently. Understanding this fundamental communication paradigm is essential for developing any ROS 2 application.
+
+The publish-subscribe pattern in ROS 2 is implemented through DDS (Data Distribution Service), which provides reliable message delivery between publishers and subscribers. This design allows for multiple publishers and subscribers to communicate through the same topic, enabling complex distributed systems where information flows seamlessly between components.
+
+## Main Theory
+
+### 1. Nodes
+Nodes are the fundamental building blocks of ROS 2 programs. Each node is an independent process that performs specific computations. Nodes contain the business logic of your robot application and communicate with other nodes through topics, services, and actions.
+
+### 2. Topics
+Topics are named buses over which nodes exchange messages. Each topic has a specific message type, and all messages published to a topic must be of that type. Topics enable asynchronous communication between nodes without direct dependencies.
+
+### 3. Publishers
+Publishers are objects that belong to nodes and are used to send messages to topics. When a publisher sends a message, DDS ensures that all subscribers to that topic receive the message.
+
+### 4. Subscribers
+Subscribers are objects that belong to nodes and receive messages from topics. Subscribers register callbacks that are executed when messages arrive on the subscribed topic.
+
+### 5. Message Types
+Messages are the data structures exchanged between nodes. Each message type is defined in a .msg file and contains fields with specific data types (integers, floats, strings, etc.).
+
+### 6. Communication Model
+The publish-subscribe model allows for loose coupling between nodes. Publishers don't need to know which nodes are subscribed to their topics, and subscribers don't need to know which nodes are publishing to their topics.
+
+```
+ROS 2 Communication Model:
+
+Publisher Node A → [Topic: /sensor_data] ← Subscriber Node B
+Publisher Node C →                             ← Subscriber Node D
+                   (DDS Middleware handles
+                    message distribution)
+```
+
+## Examples
+
+### Example: Simple Publisher-Subscriber System
+A temperature sensor node publishes temperature readings to a `/temperature` topic, while multiple subscriber nodes (like a display node, a logging node, and a control node) receive these readings without directly communicating with each other.
+
+### Example: Message Exchange
+```python
+# Publisher code
+publisher = self.create_publisher(Temperature, '/temperature', 10)
+msg = Temperature()
+msg.value = 25.0
+msg.unit = 'celsius'
+self.publisher.publish(msg)
+
+# Subscriber callback
+def temperature_callback(self, msg):
+    self.get_logger().info(f'Received temperature: {msg.value}°{msg.unit}')
+```
+
+## Practical Notes
+
+- Nodes should have descriptive names that indicate their function
+- Topic names should follow naming conventions (e.g., `/sensor/laser_scan` rather than `/laser`)
+- The queue size parameter controls how many messages are buffered when subscribers are slow
+- Publishers and subscribers automatically discover each other through DDS
+- Multiple publishers can publish to the same topic, and multiple subscribers can listen to the same topic
+
+## Summary
+
+The publish-subscribe pattern is the primary communication mechanism in ROS 2, enabling flexible and scalable robot applications. Nodes communicate through topics using publishers and subscribers, with DDS handling the underlying message delivery. This decoupled architecture allows for robust distributed systems where components can be developed and maintained independently.
+
+## Glossary
+
+- **Node**: An independent process that performs computation and communicates with other nodes
+- **Topic**: A named bus over which nodes exchange messages using the publish-subscribe pattern
+- **Publisher**: An object that sends messages to a topic
+- **Subscriber**: An object that receives messages from a topic
+- **Message**: The data structure exchanged between nodes, defined in .msg files
+- **Callback**: A function executed when a message is received by a subscriber
+- **Queue Size**: The maximum number of messages to buffer when delivering messages to subscribers
+- **DDS**: Data Distribution Service - the middleware that handles message delivery between publishers and subscribers
+- **Loose Coupling**: A design principle where components have minimal dependencies on each other
+
+## Quick Quiz
+
+1. What is the primary communication pattern in ROS 2?
+   A) Request-reply
+   B) Peer-to-peer
+   C) Publish-subscribe
+   D) Master-slave
+
+2. Which of the following is NOT a component of the publish-subscribe pattern?
+   A) Node
+   B) Topic
+   C) Publisher
+   D) Server
+
+3. What happens when a publisher sends a message to a topic?
+   A) Only one subscriber receives it
+   B) All subscribers to that topic receive it
+   C) No subscribers receive it
+   D) Only subscribers that request it receive it
+
+4. What is the role of DDS in the publish-subscribe pattern?
+   A) It defines message types
+   B) It handles message delivery between publishers and subscribers
+   C) It creates nodes
+   D) It manages memory allocation
+
+5. What does "loose coupling" mean in the context of ROS 2 communication?
+   A) Nodes are physically connected with loose cables
+   B) Components have minimal dependencies on each other
+   C) Messages are sent without strong encryption
+   D) Nodes consume minimal CPU resources
+
+**Answers:**
+1. C) Publish-subscribe
+2. D) Server
+3. B) All subscribers to that topic receive it
+4. B) It handles message delivery between publishers and subscribers
+5. B) Components have minimal dependencies on each other

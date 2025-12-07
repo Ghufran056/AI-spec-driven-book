@@ -1,0 +1,148 @@
+---
+id: 3.3-services-actions
+title: Services & Actions
+sidebar_label: 3.3 - Services & Actions
+---
+
+# Services & Actions
+
+## Learning Objectives
+
+By the end of this lesson, you will be able to:
+- Distinguish between services and actions in ROS 2
+- Understand the request-reply communication pattern of services
+- Explain the goal-result-feedback pattern of actions
+- Implement simple services and actions in ROS 2
+- Choose the appropriate communication method for different use cases
+
+## Introduction
+
+While the publish-subscribe pattern is excellent for continuous data streams, many robotics applications require more structured communication patterns. Services provide synchronous request-reply communication, ideal for tasks that have a clear beginning and end, like requesting sensor data or commanding a specific action. Actions, introduced in ROS 2, provide a more sophisticated pattern for long-running tasks that may take time to complete and need to provide periodic feedback, such as navigation to a goal or complex manipulation tasks.
+
+Services and actions complement the publish-subscribe model by providing communication patterns for specific interaction types. Services are perfect for immediate, synchronous operations that return a result, while actions are designed for operations that may take significant time and need to provide ongoing feedback about their progress.
+
+## Main Theory
+
+### 1. Services
+Services provide a request-reply communication pattern where a client sends a request to a server and waits for a response. This synchronous communication is ideal for operations that have a definite start and end point, such as requesting a map, saving a configuration, or performing a calculation.
+
+### 2. Action Architecture
+Actions extend the service concept to handle long-running operations. They provide a goal-result-feedback cycle where a client can send a goal, receive periodic feedback about progress, and eventually receive a result when the operation completes (or is canceled).
+
+### 3. Service Messages
+Service messages have two parts: a request message (sent by the client) and a response message (sent by the server). These are defined in .srv files with the request and response separated by three dashes (---).
+
+### 4. Action Messages
+Action messages have three parts: goal (sent by the client), feedback (periodically sent by the server), and result (sent once when the action completes). These are defined in .action files.
+
+### 5. Service Servers
+Service servers are responsible for receiving requests and sending responses. They register a callback function that processes incoming requests and returns the appropriate response.
+
+### 6. Action Servers
+Action servers handle goal requests, provide ongoing feedback, and eventually return results. They manage the state of long-running operations and handle cancellation requests.
+
+```
+Service Communication:
+
+Client Node → [Request] → Service Server Node
+Client Node ← [Response] ← Service Server Node
+
+Action Communication:
+
+Client Node → [Goal] → Action Server Node
+Client Node ← [Feedback] ← Action Server Node (repeatedly)
+Client Node ← [Result] ← Action Server Node (at completion)
+```
+
+## Examples
+
+### Example: Service for Position Query
+A service that accepts a robot's ID and returns its current position. The client sends the ID, the server looks up the position in its database, and returns the coordinates.
+
+### Example: Action for Navigation
+A navigation action where the client sends a destination goal, the server periodically reports progress (distance remaining, estimated time), and finally returns whether the navigation succeeded or failed.
+
+### Example: Service Implementation
+```python
+# Service definition in .srv file:
+# int64 x
+# int64 y
+# ---
+# bool success
+# string message
+
+# Server implementation:
+def handle_add_two_ints(self, request, response):
+    response.sum = request.a + request.b
+    response.success = True
+    response.message = "Calculation completed"
+    return response
+```
+
+## Practical Notes
+
+- Use services for operations that complete quickly and return a definitive result
+- Use actions for operations that take time, may be canceled, or need to provide feedback
+- Services block the client until the response is received
+- Actions allow clients to continue working while the operation runs
+- Both services and actions can be called from command line tools (ros2 service, ros2 action)
+- Action clients can cancel goals or request feedback on demand
+
+## Summary
+
+Services and actions provide essential communication patterns that complement the publish-subscribe model in ROS 2. Services offer synchronous request-reply communication for immediate operations, while actions provide a sophisticated framework for long-running tasks with progress feedback. Understanding when to use each pattern is crucial for designing effective robot applications that communicate efficiently and respond appropriately to timing requirements.
+
+## Glossary
+
+- **Service**: A communication pattern using request-reply semantics for synchronous operations
+- **Action**: A communication pattern for long-running operations with goal-result-feedback cycle
+- **Service Server**: A node that responds to service requests
+- **Service Client**: A node that sends service requests
+- **Action Server**: A node that executes long-running operations and provides feedback
+- **Action Client**: A node that sends goals to action servers
+- **Request**: The message sent by a client to a service server
+- **Response**: The message returned by a service server to a client
+- **Goal**: The initial request sent to an action server
+- **Feedback**: Periodic updates sent from an action server during execution
+- **Result**: The final outcome sent by an action server when execution completes
+- **Synchronous**: Communication where the sender waits for a response before continuing
+- **Asynchronous**: Communication where the sender continues without waiting for a response
+
+## Quick Quiz
+
+1. What is the main difference between services and actions in ROS 2?
+   A) Services are faster than actions
+   B) Services are for immediate operations, actions are for long-running operations with feedback
+   C) Services use UDP, actions use TCP
+   D) There is no difference between them
+
+2. What pattern does a service use for communication?
+   A) Publish-subscribe
+   B) Request-reply
+   C) Broadcast-response
+   D) Poll-request
+
+3. Which of the following is NOT a component of action communication?
+   A) Goal
+   B) Feedback
+   C) Result
+   D) Topic
+
+4. When should you use an action instead of a service?
+   A) For quick calculations
+   B) For operations that take time and need feedback
+   C) For publishing sensor data
+   D) For subscribing to topics
+
+5. What happens when a client calls a service?
+   A) The client continues working immediately
+   B) The client blocks until the response is received
+   C) The service runs in the background
+   D) The client subscribes to a topic
+
+**Answers:**
+1. B) Services are for immediate operations, actions are for long-running operations with feedback
+2. B) Request-reply
+3. D) Topic
+4. B) For operations that take time and need feedback
+5. B) The client blocks until the response is received

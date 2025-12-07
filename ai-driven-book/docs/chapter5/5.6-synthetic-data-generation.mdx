@@ -1,0 +1,446 @@
+---
+id: 5.6-synthetic-data-generation
+title: Synthetic Data Generation
+sidebar_label: 5.6 - Synthetic Data Generation
+---
+
+# Synthetic Data Generation
+
+## Learning Objectives
+
+By the end of this lesson, you will be able to:
+- Understand the principles and applications of synthetic data generation in robotics
+- Implement synthetic data generation pipelines using simulation environments
+- Apply domain randomization techniques to improve model generalization
+- Evaluate the quality and realism of synthetic data for robotics applications
+- Integrate synthetic data generation with machine learning workflows
+- Recognize the advantages and limitations of synthetic data vs. real data
+
+## Introduction
+
+Synthetic data generation is the process of creating artificial data using simulation environments, computer graphics, and procedural algorithms rather than collecting it from real-world sources. In robotics, synthetic data generation has become increasingly important as it addresses the challenge of obtaining large, diverse, and well-annotated datasets required for training machine learning models. Simulation environments like Isaac Sim provide photorealistic rendering capabilities and accurate physics simulation, making it possible to generate high-quality synthetic data that can be used to train perception, navigation, and control systems.
+
+The primary advantage of synthetic data is the ability to generate unlimited amounts of data with perfect annotations, including ground truth labels, depth maps, segmentation masks, and other annotations that would be expensive or impossible to obtain from real data. Synthetic data generation also allows for the creation of rare or dangerous scenarios that would be difficult to capture in real-world data collection, such as emergency situations or edge cases.
+
+Synthetic data generation is particularly valuable in robotics applications where real-world data collection is time-consuming, expensive, or dangerous. By leveraging simulation environments, robotics developers can create diverse training datasets that include various lighting conditions, environmental variations, and object configurations that help improve the robustness and generalization of their machine learning models.
+
+## Main Theory
+
+### 1. Synthetic Data Fundamentals
+Synthetic data generation involves creating artificial datasets using simulation, computer graphics, and procedural generation techniques to produce data that mimics real-world observations.
+
+### 2. Domain Randomization
+Technique of randomizing visual and physical properties in simulation to improve the transfer of models trained on synthetic data to real-world applications.
+
+### 3. Procedural Generation
+Method of creating content algorithmically rather than manually, allowing for the generation of diverse and varied synthetic environments and objects.
+
+### 4. Physics-Based Rendering
+Rendering techniques that simulate the physical behavior of light to create realistic synthetic images that match real-world conditions.
+
+### 5. Annotation Generation
+Process of automatically generating ground truth annotations (labels, segmentation, depth maps) for synthetic data, which is often more accurate than manual annotation of real data.
+
+### 6. Reality Gap Mitigation
+Strategies for reducing the differences between synthetic and real data to improve model transfer performance.
+
+```
+Synthetic Data Generation Pipeline:
+
+[Procedural Scene] → [Physics Simulation] → [Rendering Engine] → [Synthetic Images] → [Ground Truth]
+     Generation           & Lighting         & Post-Processing        & Labels        Annotations
+         ↑                    ↑                    ↑                      ↑                ↑
+[Parameters] ←→ [Objects] ←→ [Materials] ←→ [Cameras] ←→ [Post-Process] ←→ [Annotation]
+```
+
+## Examples
+
+### Example: Isaac Sim Synthetic Data Generation
+```python
+import omni
+from omni.isaac.core import World
+from omni.isaac.core.utils.stage import add_reference_to_stage
+from omni.isaac.synthetic_utils import SyntheticDataHelper
+from omni.isaac.synthetic_utils.sensors import Camera, AnnotationCamera
+import numpy as np
+import cv2
+import os
+
+class SyntheticDataGenerator:
+    def __init__(self, output_dir="synthetic_data", num_samples=1000):
+        self.output_dir = output_dir
+        self.num_samples = num_samples
+
+        # Create output directories
+        os.makedirs(os.path.join(output_dir, "images"), exist_ok=True)
+        os.makedirs(os.path.join(output_dir, "labels"), exist_ok=True)
+        os.makedirs(os.path.join(output_dir, "depth"), exist_ok=True)
+
+        # Initialize Isaac Sim world
+        self.world = World(stage_units_in_meters=1.0)
+
+        # Create synthetic data helper
+        self.sd_helper = SyntheticDataHelper()
+
+        # Add a camera for data generation
+        self.camera = Camera(
+            prim_path="/World/Camera",
+            position=np.array([0.0, 0.0, 1.0]),
+            frequency=30,
+            resolution=(640, 480)
+        )
+
+        # Add annotation camera for segmentation
+        self.annotation_camera = AnnotationCamera(
+            prim_path="/World/AnnotationCamera",
+            position=np.array([0.0, 0.0, 1.0]),
+            frequency=30,
+            resolution=(640, 480)
+        )
+
+    def generate_scene_variations(self):
+        """Generate random scene configurations"""
+        # Randomize lighting
+        light_intensity = np.random.uniform(500, 2000)
+        # Randomize object positions
+        object_x = np.random.uniform(-2.0, 2.0)
+        object_y = np.random.uniform(-2.0, 2.0)
+        # Randomize materials and textures
+        material_roughness = np.random.uniform(0.1, 0.9)
+
+        return {
+            "light_intensity": light_intensity,
+            "object_position": (object_x, object_y),
+            "material_roughness": material_roughness
+        }
+
+    def capture_synthetic_data(self, sample_idx):
+        """Capture synthetic data for a single sample"""
+        # Generate scene variation
+        scene_config = self.generate_scene_variations()
+
+        # Apply scene configuration
+        # (In practice, this would modify the stage with the new parameters)
+
+        # Step the simulation to update the scene
+        self.world.step(render=True)
+
+        # Capture RGB image
+        rgb_data = self.sd_helper.get_rgb_data(self.camera)
+        rgb_image = rgb_data["data"]
+
+        # Capture segmentation labels
+        seg_data = self.sd_helper.get_semantic_segmentation(self.annotation_camera)
+        seg_image = seg_data["data"]
+
+        # Capture depth data
+        depth_data = self.sd_helper.get_depth_data(self.camera)
+        depth_image = depth_data["data"]
+
+        # Save images
+        cv2.imwrite(
+            os.path.join(self.output_dir, "images", f"image_{sample_idx:06d}.png"),
+            cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
+        )
+
+        cv2.imwrite(
+            os.path.join(self.output_dir, "labels", f"label_{sample_idx:06d}.png"),
+            seg_image
+        )
+
+        cv2.imwrite(
+            os.path.join(self.output_dir, "depth", f"depth_{sample_idx:06d}.png"),
+            (depth_image * 1000).astype(np.uint16)  # Scale depth for 16-bit storage
+        )
+
+        # Save metadata
+        metadata = {
+            "sample_idx": sample_idx,
+            "scene_config": scene_config,
+            "image_shape": rgb_image.shape,
+            "timestamp": self.world.current_time_step_index
+        }
+
+        return metadata
+
+    def generate_dataset(self):
+        """Generate the complete synthetic dataset"""
+        print(f"Generating {self.num_samples} synthetic data samples...")
+
+        metadata_list = []
+
+        for i in range(self.num_samples):
+            # Capture synthetic data
+            metadata = self.capture_synthetic_data(i)
+            metadata_list.append(metadata)
+
+            # Print progress
+            if (i + 1) % 100 == 0:
+                print(f"Generated {i + 1}/{self.num_samples} samples")
+
+        # Save metadata
+        import json
+        with open(os.path.join(self.output_dir, "metadata.json"), "w") as f:
+            json.dump(metadata_list, f, indent=2)
+
+        print(f"Synthetic dataset generation completed. Output saved to {self.output_dir}")
+
+def main():
+    # Create synthetic data generator
+    generator = SyntheticDataGenerator(
+        output_dir="robotics_synthetic_dataset",
+        num_samples=500  # Adjust based on computational resources
+    )
+
+    # Generate dataset
+    generator.generate_dataset()
+
+if __name__ == "__main__":
+    main()
+```
+
+### Example: Domain Randomization Configuration
+```python
+import numpy as np
+from dataclasses import dataclass
+from typing import Tuple
+
+@dataclass
+class DomainRandomizationConfig:
+    """Configuration for domain randomization parameters"""
+
+    # Lighting randomization
+    light_intensity_range: Tuple[float, float] = (300.0, 2000.0)
+    light_color_temperature_range: Tuple[float, float] = (3000.0, 8000.0)
+    light_position_jitter: float = 0.5
+
+    # Material properties randomization
+    albedo_range: Tuple[float, float] = (0.1, 1.0)
+    roughness_range: Tuple[float, float] = (0.05, 0.95)
+    metallic_range: Tuple[float, float] = (0.0, 0.2)
+
+    # Camera parameters randomization
+    camera_fov_range: Tuple[float, float] = (30.0, 90.0)  # degrees
+    camera_position_jitter: float = 0.1
+    camera_rotation_jitter: float = 5.0  # degrees
+
+    # Environmental randomization
+    background_color_range: Tuple[float, float] = (0.0, 1.0)
+    fog_density_range: Tuple[float, float] = (0.0, 0.1)
+    texture_scale_range: Tuple[float, float] = (0.5, 2.0)
+
+class DomainRandomizer:
+    """Handles domain randomization for synthetic data generation"""
+
+    def __init__(self, config: DomainRandomizationConfig):
+        self.config = config
+
+    def randomize_lighting(self):
+        """Generate randomized lighting parameters"""
+        return {
+            "intensity": np.random.uniform(*self.config.light_intensity_range),
+            "color_temperature": np.random.uniform(*self.config.light_color_temperature_range),
+            "position_jitter": np.random.uniform(-self.config.light_position_jitter,
+                                                self.config.light_position_jitter, 3)
+        }
+
+    def randomize_materials(self):
+        """Generate randomized material parameters"""
+        return {
+            "albedo": np.random.uniform(*self.config.albedo_range, 3),
+            "roughness": np.random.uniform(*self.config.roughness_range),
+            "metallic": np.random.uniform(*self.config.metallic_range)
+        }
+
+    def randomize_camera(self):
+        """Generate randomized camera parameters"""
+        return {
+            "fov": np.random.uniform(*self.config.camera_fov_range),
+            "position_jitter": np.random.uniform(-self.config.camera_position_jitter,
+                                                self.config.camera_position_jitter, 3),
+            "rotation_jitter": np.random.uniform(-self.config.camera_rotation_jitter,
+                                                self.config.camera_rotation_jitter, 3)
+        }
+
+    def randomize_environment(self):
+        """Generate randomized environmental parameters"""
+        return {
+            "background_color": np.random.uniform(*self.config.background_color_range, 3),
+            "fog_density": np.random.uniform(*self.config.fog_density_range),
+            "texture_scale": np.random.uniform(*self.config.texture_scale_range)
+        }
+
+    def get_randomization_params(self):
+        """Get all randomized parameters for a single sample"""
+        return {
+            "lighting": self.randomize_lighting(),
+            "materials": self.randomize_materials(),
+            "camera": self.randomize_camera(),
+            "environment": self.randomize_environment()
+        }
+
+# Example usage
+config = DomainRandomizationConfig()
+randomizer = DomainRandomizer(config)
+
+# Generate randomization parameters for a sample
+params = randomizer.get_randomization_params()
+print(f"Randomized parameters: {params}")
+```
+
+### Example: Synthetic Data Quality Evaluation
+```python
+import numpy as np
+from skimage.metrics import structural_similarity as ssim
+from scipy.spatial.distance import cosine
+import cv2
+
+class SyntheticDataQualityEvaluator:
+    """Evaluates the quality of synthetic data compared to real data"""
+
+    def __init__(self):
+        pass
+
+    def evaluate_image_quality(self, synthetic_img, real_img):
+        """Evaluate image quality metrics between synthetic and real images"""
+        # Convert to grayscale for SSIM calculation
+        if len(synthetic_img.shape) == 3:
+            syn_gray = cv2.cvtColor(synthetic_img, cv2.COLOR_RGB2GRAY)
+            real_gray = cv2.cvtColor(real_img, cv2.COLOR_RGB2GRAY)
+        else:
+            syn_gray = synthetic_img
+            real_gray = real_img
+
+        # Calculate SSIM
+        ssim_score = ssim(syn_gray, real_gray)
+
+        # Calculate MSE
+        mse = np.mean((synthetic_img - real_img) ** 2)
+
+        # Calculate PSNR
+        if mse == 0:
+            psnr = float('inf')
+        else:
+            max_pixel = 255.0
+            psnr = 20 * np.log10(max_pixel / np.sqrt(mse))
+
+        return {
+            "ssim": ssim_score,
+            "mse": mse,
+            "psnr": psnr
+        }
+
+    def evaluate_distribution_similarity(self, synthetic_features, real_features):
+        """Evaluate how similar the feature distributions are"""
+        # Calculate cosine similarity between mean feature vectors
+        syn_mean = np.mean(synthetic_features, axis=0)
+        real_mean = np.mean(real_features, axis=0)
+
+        cosine_sim = 1 - cosine(syn_mean, real_mean)
+
+        # Calculate statistical moments comparison
+        syn_std = np.std(synthetic_features, axis=0)
+        real_std = np.std(real_features, axis=0)
+
+        std_ratio = np.mean(syn_std / (real_std + 1e-8))  # Avoid division by zero
+
+        return {
+            "cosine_similarity": cosine_sim,
+            "std_ratio": std_ratio
+        }
+
+    def evaluate_annotation_quality(self, synthetic_ann, real_ann):
+        """Evaluate quality of synthetic annotations compared to real"""
+        # Calculate IoU for segmentation masks
+        intersection = np.logical_and(synthetic_ann, real_ann)
+        union = np.logical_or(synthetic_ann, real_ann)
+
+        iou = np.sum(intersection) / (np.sum(union) + 1e-8)
+
+        # Calculate pixel accuracy
+        pixel_acc = np.mean(synthetic_ann == real_ann)
+
+        return {
+            "iou": iou,
+            "pixel_accuracy": pixel_acc
+        }
+
+# Example usage
+evaluator = SyntheticDataQualityEvaluator()
+
+# Example synthetic and real images (in practice, these would come from your dataset)
+synthetic_example = np.random.randint(0, 255, (480, 640, 3), dtype=np.uint8)
+real_example = np.random.randint(0, 255, (480, 640, 3), dtype=np.uint8)
+
+# Evaluate image quality
+img_quality = evaluator.evaluate_image_quality(synthetic_example, real_example)
+print(f"Image quality metrics: {img_quality}")
+```
+
+## Practical Notes
+
+- Use domain randomization to improve synthetic-to-real transfer performance
+- Ensure synthetic data covers the full range of expected real-world conditions
+- Validate synthetic data quality against real data distributions
+- Consider computational requirements for large-scale synthetic data generation
+- Implement proper data versioning and tracking for synthetic datasets
+- Combine synthetic and real data for optimal model training
+- Monitor for artifacts or unrealistic elements in synthetic data
+
+## Summary
+
+Synthetic data generation has become a crucial component of modern robotics development, providing unlimited training data with perfect annotations while reducing the cost and complexity of real-world data collection. By leveraging simulation environments like Isaac Sim, robotics developers can create diverse, high-quality datasets that improve the robustness and generalization of their machine learning models. The key to successful synthetic data generation lies in proper domain randomization, quality evaluation, and validation against real-world performance.
+
+## Glossary
+
+- **Synthetic Data**: Artificially generated data that mimics real-world observations
+- **Domain Randomization**: Technique of randomizing simulation parameters to improve real-world transfer
+- **Procedural Generation**: Algorithmic creation of content rather than manual design
+- **Physics-Based Rendering**: Rendering that simulates physical light behavior for realism
+- **Ground Truth**: Accurate reference data used for training and evaluation
+- **Reality Gap**: Differences between synthetic and real-world data that affect model performance
+- **Annotation**: Labels or metadata associated with data samples
+- **SSIM**: Structural Similarity Index Measure for image quality evaluation
+- **PSNR**: Peak Signal-to-Noise Ratio for image quality evaluation
+- **IoU**: Intersection over Union for segmentation quality evaluation
+- **Feature Distribution**: Statistical properties of data representations
+- **Data Augmentation**: Techniques to artificially increase dataset diversity
+
+## Quick Quiz
+
+1. What is the primary advantage of synthetic data generation in robotics?
+   A) Lower computational requirements
+   B) Unlimited data with perfect annotations
+   C) Simpler algorithms
+   D) Reduced sensor requirements
+
+2. What is domain randomization used for?
+   A) Randomizing network protocols
+   B) Improving synthetic-to-real transfer by randomizing simulation parameters
+   C) Randomizing robot hardware
+   D) Randomizing user interfaces
+
+3. Which metric is commonly used to evaluate image quality between synthetic and real images?
+   A) F1 Score
+   B) Precision
+   C) SSIM (Structural Similarity Index Measure)
+   D) Recall
+
+4. What does IoU stand for in the context of synthetic data evaluation?
+   A) Input over Unit
+   B) Intersection over Union
+   C) Internal over Underlying
+   D) Index of Understanding
+
+5. What is the "reality gap" in synthetic data generation?
+   A) The physical gap between sensors
+   B) Differences between synthetic and real-world data that affect model performance
+   C) The time delay in simulation
+   D) The cost difference between synthetic and real data
+
+**Answers:**
+1. B) Unlimited data with perfect annotations
+2. B) Improving synthetic-to-real transfer by randomizing simulation parameters
+3. C) SSIM (Structural Similarity Index Measure)
+4. B) Intersection over Union
+5. B) Differences between synthetic and real-world data that affect model performance

@@ -1,0 +1,130 @@
+---
+id: 3.1-ros-2-architecture-overview
+title: ROS 2 Architecture Overview
+sidebar_label: 3.1 - ROS 2 Architecture Overview
+---
+
+# ROS 2 Architecture Overview
+
+## Learning Objectives
+
+By the end of this lesson, you will be able to:
+- Understand the fundamental architecture of ROS 2 and how it differs from ROS 1
+- Identify the key components of the ROS 2 ecosystem
+- Explain the role of DDS in ROS 2 communication
+- Describe the client library implementations in ROS 2
+- Recognize the benefits of the ROS 2 architecture for robotics development
+
+## Introduction
+
+ROS 2 (Robot Operating System 2) represents a major architectural evolution from its predecessor, designed to address the limitations of ROS 1 while maintaining its powerful development capabilities. The most significant change is the adoption of DDS (Data Distribution Service) as the underlying communication middleware, which provides improved real-time performance, security, and scalability. This lesson provides an overview of the ROS 2 architecture, explaining how its components work together to enable robust robotics development.
+
+The ROS 2 architecture is built around a distributed system design that allows multiple processes and devices to communicate seamlessly. Unlike ROS 1, which relied on a centralized master node, ROS 2 uses a peer-to-peer discovery mechanism that eliminates single points of failure and enables more resilient robot systems.
+
+## Main Theory
+
+### 1. DDS-Based Communication Layer
+The core of ROS 2 architecture is built on DDS (Data Distribution Service), a middleware standard for real-time systems. DDS provides a publisher-subscriber communication model that enables reliable, real-time data exchange between distributed applications. This replaces the custom TCPROS/UDPROS transport used in ROS 1.
+
+### 2. Client Libraries (rcl)
+ROS 2 abstracts the DDS implementation through client libraries (rcl), which provide language-specific APIs. The main client libraries include rclcpp for C++ and rclpy for Python, both built on top of the underlying rcl implementation.
+
+### 3. Nodes and Communication Primitives
+In ROS 2, nodes are independent processes that communicate through topics (publish/subscribe), services (request/reply), and actions (goal-based communication). Each node has its own context and can be distributed across multiple machines.
+
+### 4. Parameter System
+ROS 2 includes a distributed parameter system that allows nodes to configure their behavior at runtime. Parameters can be set through launch files, command line, or programmatically, and are automatically shared across the ROS graph.
+
+### 5. Lifecycle Management
+ROS 2 introduces lifecycle nodes that provide explicit state management, allowing for better coordination of complex systems with multiple interconnected components.
+
+```
+ROS 2 Architecture Overview:
+
+[DDS Implementation] ←→ [rcl] ←→ [rclcpp/rclpy] ←→ [User Nodes]
+     ↑                     ↑         ↑                  ↑
+   Fast DDS            ROS Client   C++/Python        Application
+   Cyclone DDS         Libraries    APIs              Code
+   RTI Connext
+```
+
+## Examples
+
+### Example: Basic Node Structure
+A simple ROS 2 node demonstrates the architecture by creating publishers and subscribers that communicate through the DDS layer without requiring a central master:
+
+```python
+import rclpy
+from rclpy.node import Node
+
+class MinimalPublisher(Node):
+    def __init__(self):
+        super().__init__('minimal_publisher')
+        self.publisher = self.create_publisher(String, 'topic', 10)
+        # Publisher automatically discovers subscribers via DDS
+```
+
+### Example: Distributed System
+In a distributed setup, nodes can run on different machines and still communicate seamlessly through the DDS infrastructure, which handles discovery, data serialization, and transport automatically.
+
+## Practical Notes
+
+- The DDS implementation can be swapped without changing application code due to the abstraction layer
+- ROS 2 supports multiple DDS vendors (Fast DDS, Cyclone DDS, RTI Connext)
+- Network discovery is automatic in ROS 2, unlike ROS 1 which required manual ROS_MASTER_URI configuration
+- Security features are built into the DDS layer, providing authentication and encryption capabilities
+
+## Summary
+
+ROS 2's architecture represents a significant advancement over ROS 1, with DDS providing a robust foundation for distributed robotics applications. The layered design with client libraries, the removal of the central master, and built-in lifecycle management make ROS 2 more suitable for production robotics applications. The architecture enables better real-time performance, improved security, and enhanced scalability compared to ROS 1.
+
+## Glossary
+
+- **DDS**: Data Distribution Service - a middleware standard for real-time systems that forms the foundation of ROS 2 communication
+- **rcl**: ROS Client Library - the C library that provides the core ROS 2 functionality
+- **rclcpp**: C++ client library for ROS 2, built on top of rcl
+- **rclpy**: Python client library for ROS 2, built on top of rcl
+- **Nodes**: Independent processes that perform computation and communicate with other nodes
+- **Topics**: Named buses over which nodes exchange messages using publisher-subscriber pattern
+- **Services**: Request-reply communication pattern between nodes
+- **Actions**: Goal-based communication pattern for long-running tasks with feedback
+- **Lifecycle Nodes**: Nodes with explicit state management for better system coordination
+
+## Quick Quiz
+
+1. What does DDS stand for in the context of ROS 2?
+   A) Distributed Data System
+   B) Data Distribution Service
+   C) Dynamic Discovery System
+   D) Distributed Discovery Service
+
+2. Which of the following is NOT a core communication primitive in ROS 2?
+   A) Topics
+   B) Services
+   C) Actions
+   D) Functions
+
+3. What is the main advantage of the DDS-based architecture over ROS 1's architecture?
+   A) Faster processing speed
+   B) Better graphics rendering
+   C) Improved real-time performance, security, and scalability
+   D) Simpler programming interface
+
+4. Which component provides the C++ API for ROS 2?
+   A) rcl
+   B) rclcpp
+   C) rclpy
+   D) rmw
+
+5. What was the main limitation of ROS 1's architecture that ROS 2 addresses?
+   A) Lack of programming languages
+   B) Centralized master node creating single point of failure
+   C) Limited sensor support
+   D) No visualization tools
+
+**Answers:**
+1. B) Data Distribution Service
+2. D) Functions
+3. C) Improved real-time performance, security, and scalability
+4. B) rclcpp
+5. B) Centralized master node creating single point of failure

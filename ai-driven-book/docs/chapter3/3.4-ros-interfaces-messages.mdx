@@ -1,0 +1,163 @@
+---
+id: 3.4-ros-interfaces-messages
+title: ROS Interfaces (Messages)
+sidebar_label: 3.4 - ROS Interfaces (Messages)
+---
+
+# ROS Interfaces (Messages)
+
+## Learning Objectives
+
+By the end of this lesson, you will be able to:
+- Understand the role of message interfaces in ROS 2 communication
+- Define custom message types for your applications
+- Identify standard message types from common_msgs
+- Explain how messages are serialized and transmitted
+- Create and use service and action interfaces
+- Organize message packages for reuse across projects
+
+## Introduction
+
+ROS interfaces define the structure of data exchanged between nodes through topics, services, and actions. Messages are the data structures that carry information in publish-subscribe communications, while services use request/response message pairs, and actions use goal/feedback/result message triplets. Understanding how to define and use these interfaces is essential for effective ROS 2 development, as they form the contract between different parts of your robot system.
+
+Message interfaces in ROS 2 are defined using special definition files (.msg, .srv, .action) that specify the data fields and their types. These definitions are compiled into language-specific implementations (C++, Python, etc.) that allow nodes written in different languages to exchange data seamlessly. This standardized approach ensures interoperability across the entire ROS ecosystem.
+
+## Main Theory
+
+### 1. Message Definition Files (.msg)
+Message definition files define the structure of data exchanged through topics. Each line in a .msg file specifies a field type and name. Supported field types include primitive types (int8, float64, string) and other message types.
+
+### 2. Service Definition Files (.srv)
+Service files define the request and response structure for service calls. The request and response parts are separated by three dashes (---), with fields defined in the same way as message files.
+
+### 3. Action Definition Files (.action)
+Action files define the goal, feedback, and result structure for action communications. The three parts are separated by three dashes (---), allowing for complex, multi-part interactions.
+
+### 4. Standard Message Types
+The common_msgs package provides standardized message types for common robot data like sensor readings, geometry information, and navigation goals. Using these standard types promotes interoperability between different ROS packages.
+
+### 5. Message Generation
+During the build process, message definition files are processed by code generators to create language-specific implementations that can be used in nodes.
+
+### 6. Serialization
+Messages are serialized to binary format for transmission over the network. This process converts the structured data into a byte stream that can be transmitted efficiently and reconstructed at the destination.
+
+```
+Message Definition Process:
+
+[.msg file] → [rosidl_generator_py/cpp] → [Python/C++ classes] → [Runtime objects]
+
+Example .msg file:
+int64 id
+string name
+geometry_msgs/Point position
+---
+```
+
+## Examples
+
+### Example: Custom Sensor Message
+A robot might define a custom sensor message that includes both raw readings and processed data:
+```
+sensor_msgs/LaserScan raw_scan
+float32[] processed_distances
+bool obstacle_detected
+uint8 obstacle_direction  # 0-left, 1-front, 2-right
+```
+
+### Example: Service for Robot Control
+A service to command robot movement might have a request with velocity commands and a response with success status:
+```
+# Request
+float64 linear_velocity
+float64 angular_velocity
+---
+# Response
+bool success
+string message
+```
+
+### Example: Action for Navigation
+An action for navigation might include a goal with target coordinates, feedback with progress, and a result with success status:
+```
+# Goal
+geometry_msgs/PoseStamped target_pose
+float32 tolerance
+---
+# Feedback
+float32 distance_remaining
+geometry_msgs/Pose current_pose
+---
+# Result
+bool success
+string message
+```
+
+## Practical Notes
+
+- Use standard message types from common_msgs when possible to promote compatibility
+- Message field names should be descriptive and follow naming conventions
+- Consider the frequency of message publication when designing message content
+- Messages should contain all necessary information for the receiver to process them
+- Keep message sizes reasonable to avoid network congestion
+- Use arrays for repeated data of the same type
+- Nested messages are allowed but should be used judiciously
+
+## Summary
+
+ROS interfaces provide the standardized data structures that enable communication between nodes. Message, service, and action definition files allow developers to specify exactly what data is exchanged between components, with the ROS build system generating appropriate language bindings. Understanding how to properly define and use these interfaces is crucial for creating robust, interoperable robot systems that can scale across different platforms and programming languages.
+
+## Glossary
+
+- **Message Interface**: Defines the structure of data exchanged through topics in ROS 2
+- **Service Interface**: Defines the request and response structure for service calls
+- **Action Interface**: Defines the goal, feedback, and result structure for action communications
+- **.msg file**: Definition file that specifies the fields and types of a message
+- **.srv file**: Definition file that specifies request and response parts of a service
+- **.action file**: Definition file that specifies goal, feedback, and result parts of an action
+- **Serialization**: The process of converting structured data into a binary format for transmission
+- **common_msgs**: Package containing standardized message types for common robot data
+- **rosidl**: ROS Interface Definition Language tools that generate language-specific implementations
+- **Field**: A named data element within a message definition
+- **Primitive Type**: Basic data types like integers, floats, and booleans
+- **Nested Message**: A message field that contains another message type
+- **Message Generation**: The build process that creates language-specific message classes from definition files
+
+## Quick Quiz
+
+1. What file extension is used for message definition files in ROS 2?
+   A) .srv
+   B) .action
+   C) .msg
+   D) .interface
+
+2. How are request and response parts separated in a service definition file?
+   A) With a single dash (-)
+   B) With two dashes (=)
+   C) With three dashes (---)
+   D) With a colon (:)
+
+3. Which package provides standardized message types for common robot data?
+   A) std_msgs
+   B) common_msgs
+   C) geometry_msgs
+   D) sensor_msgs
+
+4. What are the three components of an action definition?
+   A) Request, Response, Feedback
+   B) Input, Process, Output
+   C) Goal, Feedback, Result
+   D) Start, Middle, End
+
+5. What happens during the message serialization process?
+   A) Messages are compressed for storage
+   B) Structured data is converted to binary format for transmission
+   C) Messages are validated for correctness
+   D) Message definitions are compiled into code
+
+**Answers:**
+1. C) .msg
+2. C) With three dashes (---)
+3. B) common_msgs
+4. C) Goal, Feedback, Result
+5. B) Structured data is converted to binary format for transmission

@@ -1,0 +1,172 @@
+---
+id: 2.3-camera-systems-and-stereo-vision
+title: Camera Systems and Stereo Vision
+sidebar_label: 2.3 - Camera Systems and Stereo Vision
+---
+
+# Camera Systems and Stereo Vision
+
+## Learning Objectives
+
+By the end of this lesson, you will be able to:
+- Understand the fundamental principles of camera-based vision in robotics
+- Explain how stereo vision creates depth perception from two cameras
+- Identify different types of camera systems used in robotics
+- Describe the process of stereo disparity and depth estimation
+- Recognize practical applications of camera systems in robotic perception
+
+## Introduction
+
+Camera systems are among the most important sensors for robots that need to understand their visual environment. Unlike range sensors that provide distance measurements, cameras capture rich visual information that allows robots to recognize objects, read text, detect colors, and understand complex scenes. Stereo vision takes this a step further by using two or more cameras to estimate depth, providing 3D information similar to human vision.
+
+Robots use cameras for a wide variety of tasks including navigation, object recognition, quality inspection, and human-robot interaction. The visual information from cameras can be processed using computer vision algorithms to extract meaningful information about the environment. Stereo vision systems add depth perception to this visual information, enabling robots to understand the 3D structure of their environment.
+
+## How it Works
+
+### 1. Pinhole Camera Model
+The basic model for understanding how cameras work, where light rays pass through a small aperture to form an inverted image. This model helps explain perspective projection and the relationship between 3D world points and 2D image points.
+
+### 2. Stereo Vision Geometry
+Two cameras separated by a known distance (the baseline) capture slightly different views of the same scene. The difference in position of objects between the two images (disparity) is inversely related to the object's distance from the cameras.
+
+### 3. Image Formation Process
+Light enters the camera through a lens, which focuses it onto an image sensor. The sensor converts light intensity into electrical signals that are processed to form a digital image. Calibration is needed to account for lens distortion and other factors.
+
+### 4. Color Sensing
+Digital cameras use sensors with color filters (typically RGB) to capture color information. Different color spaces (RGB, HSV, etc.) are used for different applications depending on the requirements for color processing.
+
+### 5. Stereo Disparity Calculation
+The process of finding corresponding points in left and right images and calculating the difference in their positions. This disparity is used to calculate depth using triangulation principles.
+
+### 6. Depth Map Generation
+Converting stereo image pairs into depth maps where each pixel value represents the distance to the corresponding point in the scene. This creates a 2D representation of 3D depth information.
+
+## Simple Diagrams
+
+```
+Pinhole Camera Model:
+
+3D Scene Point
+      *
+      |\\
+      | \\
+      |  \\
+      |   \\ Image Plane
+      |    \\
+      |     \\
+      |      O (Pinhole)
+      |      |
+      |      | Image Point
+      |      *
+      |
+      Camera Center
+```
+
+```
+Stereo Vision Principle:
+
+Left Camera O-------------------O Right Camera
+           \\                   /
+            \\                 /
+             \\               /
+              \\             /
+               \\           /
+                \\         /
+                 \\       /
+                  \\     /
+                   \\   /
+                    \\ /
+                     * Scene Point
+```
+
+```
+Stereo Disparity Example:
+
+Left Image:     [Object]---------[Object]
+                * * *             * * *
+
+Right Image:    [Object]---------[Object]
+                   * * *             * * *
+
+Disparity:      <<<-- Distance between
+                  corresponding points
+```
+
+```
+Depth Estimation Formula:
+
+Depth = (Baseline × Focal Length) / Disparity
+
+Where:
+- Baseline: Distance between the two cameras
+- Focal Length: Camera focal length
+- Disparity: Difference in pixel positions between images
+```
+
+## Real-world Examples
+
+### Autonomous Vehicles
+Self-driving cars use stereo camera systems to detect and measure the distance to other vehicles, pedestrians, and obstacles. Tesla's Autopilot system relies heavily on camera-based perception, using multiple cameras to create a comprehensive view of the environment.
+
+### Robot Navigation
+Robots like the PR2 and other research platforms use stereo vision to navigate complex environments. The depth information allows them to identify obstacles, plan safe paths, and avoid collisions.
+
+### Object Manipulation
+Robots in warehouses and manufacturing use stereo vision to locate and grasp objects. The depth information helps them determine the exact position and orientation of objects, enabling precise manipulation.
+
+### Depth Estimation and Stereo Disparity
+Modern smartphones use stereo cameras or structured light systems to create depth maps for portrait mode photography. Similarly, robotics applications use stereo disparity to understand the 3D structure of scenes for navigation and manipulation tasks.
+
+## Summary
+
+Camera systems and stereo vision provide robots with rich visual information and depth perception capabilities. The combination of 2D visual data with 3D depth information enables robots to recognize objects, navigate safely, and interact with their environment effectively. Stereo vision systems use the geometric relationship between two cameras to calculate depth, providing 3D information from 2D images. As camera technology continues to improve, we're seeing more sophisticated visual perception capabilities in robotic systems.
+
+## Glossary
+
+- **Stereo Vision**: A method of depth perception using two or more cameras to calculate distance based on parallax
+- **Disparity**: The difference in position of an object between left and right stereo images
+- **Pinhole Camera Model**: A simplified model of camera operation based on light rays passing through a point aperture
+- **Baseline**: The distance between the optical centers of two stereo cameras
+- **Depth Map**: A 2D image where pixel values represent distance to objects in the scene
+- **Image Calibration**: The process of determining camera parameters to correct for distortion and other optical effects
+- **Triangulation**: A method of determining distance by measuring angles from two different positions
+- **Focal Length**: The distance between the camera lens and the image sensor when the subject is in focus
+
+## Quick Quiz
+
+1. What is stereo disparity?
+   A) The color difference between two images
+   B) The difference in position of an object between left and right stereo images
+   C) The brightness difference between two images
+   D) The size difference between two images
+
+2. In stereo vision, how is depth related to disparity?
+   A) Depth is directly proportional to disparity
+   B) Depth is inversely related to disparity
+   C) Depth and disparity are unrelated
+   D) Depth is the square of disparity
+
+3. What does the baseline refer to in stereo vision?
+   A) The focal length of the camera
+   B) The distance between the optical centers of two stereo cameras
+   C) The height of the camera setup
+   D) The width of the captured image
+
+4. Which formula correctly represents the relationship for depth estimation in stereo vision?
+   A) Depth = Baseline + Focal Length + Disparity
+   B) Depth = (Baseline × Focal Length) / Disparity
+   C) Depth = Disparity / (Baseline × Focal Length)
+   D) Depth = Baseline × Disparity × Focal Length
+
+5. What is a depth map?
+   A) A map showing the colors of objects in a scene
+   B) A 2D image where pixel values represent distance to objects in the scene
+   C) A map showing the brightness of objects
+   D) A map showing the texture of objects
+
+**Answers:**
+1. B) The difference in position of an object between left and right stereo images
+2. B) Depth is inversely related to disparity
+3. B) The distance between the optical centers of two stereo cameras
+4. B) Depth = (Baseline × Focal Length) / Disparity
+5. B) A 2D image where pixel values represent distance to objects in the scene

@@ -1,0 +1,162 @@
+---
+id: 2.4-imu-balance-and-motion-tracking
+title: IMU, Balance, and Motion Tracking
+sidebar_label: 2.4 - IMU, Balance, and Motion Tracking
+---
+
+# IMU, Balance, and Motion Tracking
+
+## Learning Objectives
+
+By the end of this lesson, you will be able to:
+- Explain the components and function of an Inertial Measurement Unit (IMU)
+- Understand how IMUs enable robots to maintain balance and track motion
+- Describe the principles of accelerometers and gyroscopes in motion sensing
+- Identify applications of IMU technology in robotics and autonomous systems
+- Recognize the limitations and challenges of IMU-based motion tracking
+
+## Introduction
+
+Inertial Measurement Units (IMUs) are critical sensors that help robots understand their motion and orientation in 3D space. An IMU typically combines accelerometers, gyroscopes, and sometimes magnetometers to provide comprehensive information about a robot's movement, rotation, and orientation relative to gravity and magnetic north. These sensors are essential for robots that need to maintain balance, navigate through space, or perform precise motion control.
+
+IMUs work by measuring inertial forces and angular rates without requiring external references. This makes them valuable for applications where GPS or visual references might be unavailable, such as indoors, underground, or in space. The information from IMUs is crucial for humanoid robots, drones, autonomous vehicles, and any system that needs to maintain stability or track its movement accurately.
+
+## How it Works
+
+### 1. Accelerometers
+These sensors measure linear acceleration along three axes (X, Y, Z). They can detect the direction of gravity when stationary, allowing the system to determine tilt angles. They also measure acceleration due to motion, which can be integrated to estimate velocity and position.
+
+### 2. Gyroscopes
+Gyroscopes measure angular velocity around three axes. They provide information about rotation rates, which can be integrated to determine orientation changes. Modern MEMS gyroscopes are small, low-power, and suitable for robotics applications.
+
+### 3. Magnetometers
+These sensors measure magnetic fields and are typically used to determine heading relative to magnetic north. They complement accelerometers and gyroscopes by providing an absolute reference direction.
+
+### 4. Sensor Fusion
+The data from accelerometers, gyroscopes, and magnetometers are combined using algorithms like Kalman filters or complementary filters to provide accurate orientation estimates. Each sensor type has strengths and weaknesses that complement each other.
+
+### 5. Attitude and Heading Reference Systems (AHRS)
+These systems process IMU data to determine the 3D orientation (attitude) of a device relative to a reference frame, typically including roll, pitch, and yaw angles.
+
+### 6. Dead Reckoning
+Using IMU data to estimate position by integrating acceleration data over time. This method accumulates errors over time but is useful for short-term navigation when other positioning systems are unavailable.
+
+## Simple Diagrams
+
+```
+IMU Components:
+
+     Magnetometer
+           |
+           |
+   Gyroscopes (XYZ)
+           |
+           |
+  Accelerometers (XYZ)
+           |
+      [3D Object]
+```
+
+```
+6-Axis IMU Measurement:
+
+X-axis: Roll (rotation around longitudinal axis)
+Y-axis: Pitch (rotation around lateral axis)
+Z-axis: Yaw (rotation around vertical axis)
+
+    Z (Yaw)
+    ↑
+    |    / Y (Pitch)
+    |   /
+    |  /
+    | /
+    |/________→ X (Roll)
+```
+
+```
+Motion Tracking Process:
+
+Physical Motion → IMU Sensors → Raw Data → Filtering → Orientation/Position
+```
+
+```
+IMU Error Accumulation:
+
+Time →
+Error ↑
+      *
+       \\
+        \\
+         \\
+          * (Drift over time)
+```
+
+## Real-world Examples
+
+### Humanoid Robots
+Robots like Honda's ASIMO and Boston Dynamics' Atlas use IMUs to maintain balance while walking, running, or performing complex movements. The IMU data is critical for detecting falls and maintaining stability during dynamic motions.
+
+### Drones and UAVs
+Quadcopters and other drones rely heavily on IMUs for stable flight. The gyroscope data helps maintain orientation, while accelerometer data contributes to position control and altitude hold functions.
+
+### Autonomous Vehicles
+Self-driving cars use IMUs as part of their navigation system, providing motion data when GPS signals are unavailable or unreliable, such as in tunnels or urban canyons.
+
+### Motion Capture
+IMU-based motion capture systems are used in animation, sports analysis, and rehabilitation to track human movement without requiring cameras or external sensors.
+
+## Summary
+
+IMUs are essential sensors that provide robots with information about their motion, orientation, and balance. By combining accelerometers, gyroscopes, and magnetometers, IMUs enable robots to understand their state in 3D space without relying on external references. The data from IMUs is critical for balance control, navigation, and motion tracking applications. While IMU data can drift over time due to integration errors, proper sensor fusion techniques can provide reliable short-term motion estimates that complement other sensing systems.
+
+## Glossary
+
+- **IMU (Inertial Measurement Unit)**: A device that measures and reports a body's specific force, angular rate, and sometimes magnetic field
+- **Accelerometer**: A sensor that measures proper acceleration (force per unit mass)
+- **Gyroscope**: A device that measures or maintains orientation based on angular velocity
+- **Magnetometer**: A sensor that measures magnetic fields to determine heading relative to magnetic north
+- **Attitude**: The orientation of an object in 3D space, typically described by roll, pitch, and yaw angles
+- **Roll**: Rotation around the longitudinal axis (nose up/down)
+- **Pitch**: Rotation around the lateral axis (left/right tilt)
+- **Yaw**: Rotation around the vertical axis (turning left/right)
+- **AHRS**: Attitude and Heading Reference System - processes IMU data to determine orientation
+- **Dead Reckoning**: Navigation method that estimates current position based on a known starting point and measured motion
+
+## Quick Quiz
+
+1. What does IMU stand for?
+   A) Inertial Motion Unit
+   B) Integrated Measurement Unit
+   C) Inertial Measurement Unit
+   D) Internal Motion Unit
+
+2. Which sensor measures angular velocity around three axes?
+   A) Accelerometer
+   B) Gyroscope
+   C) Magnetometer
+   D) Barometer
+
+3. What does a magnetometer typically measure?
+   A) Linear acceleration
+   B) Angular velocity
+   C) Magnetic fields and heading relative to magnetic north
+   D) Temperature and pressure
+
+4. What are the three components of attitude typically described by?
+   A) X, Y, Z coordinates
+   B) Latitude, longitude, altitude
+   C) Roll, pitch, yaw angles
+   D) Speed, direction, acceleration
+
+5. What is the main limitation of using IMU data for position estimation over long periods?
+   A) IMUs are too expensive
+   B) IMU data drifts over time due to integration errors
+   C) IMUs only work in certain environments
+   D) IMUs consume too much power
+
+**Answers:**
+1. C) Inertial Measurement Unit
+2. B) Gyroscope
+3. C) Magnetic fields and heading relative to magnetic north
+4. C) Roll, pitch, yaw angles
+5. B) IMU data drifts over time due to integration errors

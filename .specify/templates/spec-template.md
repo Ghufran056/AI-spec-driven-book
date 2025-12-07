@@ -95,6 +95,15 @@
 - **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
 - **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
 
+### Content Guidelines (derived from Project Constitution)
+
+- **Chapter & Lesson Structure**: Specifications for new content MUST clearly define its place within a chapter and how it contributes to the overall lesson flow.
+- **Consistent Lesson Style**: All specified content MUST adhere to a clear, beginner-friendly, and structured writing style.
+- **Comprehensive Lesson Content**: Each lesson specification MUST include sections for introduction, clear explanations, diagrams, practical examples, a summary, a glossary, and a short MCQ quiz.
+- **Docusaurus Compatibility**: All content outlined in the specification MUST be compatible with Docusaurus markdown/MDX formatting and intended for `ai-driven-book/docs/`.
+- **Content Uniqueness**: The specification MUST ensure that new content avoids repeating material from existing lessons and focuses on a distinct topic.
+- **Consistent Tone & Accuracy**: The specified content MUST maintain the established tone of the textbook, and explanations MUST be simple, accurate, and aligned with the Physical AI & Humanoid Robotics syllabus.
+
 ### Key Entities *(include if feature involves data)*
 
 - **[Entity 1]**: [What it represents, key attributes without implementation]

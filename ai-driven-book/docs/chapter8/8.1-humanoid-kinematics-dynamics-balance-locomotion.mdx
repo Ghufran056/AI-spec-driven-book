@@ -1,0 +1,161 @@
+---
+title: Humanoid Kinematics, Dynamics, Balance & Locomotion
+sidebar_position: 1
+description: Understanding the mathematical modeling and control of humanoid robot movement, including kinematics, dynamics, balance control, and walking patterns
+---
+
+# Humanoid Kinematics, Dynamics, Balance & Locomotion
+
+## Learning Goals
+
+- Calculate forward and inverse kinematics for humanoid robots
+- Derive dynamic equations of motion for humanoid systems
+- Design balance control algorithms using ZMP principles
+- Generate stable walking gaits for humanoid robots
+- Analyze stability of humanoid locomotion patterns
+- Implement whole-body control for humanoid robots
+- Evaluate different balance strategies for various scenarios
+
+## Introduction
+
+Humanoid robots represent one of the most challenging domains in robotics, requiring sophisticated mathematical models and control algorithms to achieve human-like movement. The study of humanoid kinematics, dynamics, balance, and locomotion encompasses the mathematical foundations that enable these robots to move, maintain stability, and navigate complex environments. Unlike simpler robotic systems, humanoid robots must coordinate multiple degrees of freedom while maintaining balance under the influence of gravity and external disturbances. This lesson explores the theoretical foundations and practical implementations of controlling these complex mechanical systems, from basic kinematic modeling to advanced dynamic control and stable locomotion patterns.
+
+## Theory
+
+### Forward Kinematics for Humanoid Robots
+
+Forward kinematics determines the position and orientation of the end-effectors (hands, feet) based on the joint angles of the robot. For humanoid robots, this involves multiple kinematic chains: one from the torso to each hand and one from the torso to each foot. The Denavit-Hartenberg (DH) convention provides a systematic method for defining coordinate frames and deriving the transformation matrices that relate joint angles to end-effector positions.
+
+In humanoid robots, forward kinematics must account for the complex structure with multiple limbs, a trunk, and a head. The kinematic model typically includes 20-30 degrees of freedom, with each leg having 6-7 joints (hip, knee, ankle) and each arm having 6-7 joints (shoulder, elbow, wrist). The forward kinematics equations map the high-dimensional joint space to the task space positions and orientations of critical points like the feet and hands.
+
+### Inverse Kinematics Solutions
+
+Inverse kinematics solves the more challenging problem of determining the required joint angles to achieve desired end-effector positions and orientations. For humanoid robots, this is often an under-constrained problem since the robot has more degrees of freedom than necessary to reach a target, requiring optimization criteria to select appropriate solutions.
+
+The pseudoinverse method using the Jacobian matrix provides a general solution, but can lead to joint limit violations and singularities. Cyclic Coordinate Descent (CCD) and FABRIK (Forward And Backward Reaching Inverse Kinematics) offer alternative approaches that are more robust for humanoid systems. For whole-body control, optimization-based methods consider multiple tasks simultaneously, such as reaching with the hands while maintaining balance.
+
+### Dynamics Modeling Using Lagrangian Mechanics
+
+The dynamic equations of motion for humanoid robots are derived using Lagrangian mechanics, which provides a systematic approach to modeling complex multi-body systems. The Lagrangian L = T - V, where T is the kinetic energy and V is the potential energy of the system, leads to the Euler-Lagrange equations.
+
+For humanoid robots, the dynamic equations take the form: M(q)q̈ + C(q, q̇)q̇ + G(q) = τ, where M(q) is the mass matrix, C(q, q̇) represents Coriolis and centrifugal forces, G(q) represents gravitational forces, and τ represents the joint torques. The mass matrix is configuration-dependent and includes coupling effects between joints, making real-time control computationally intensive.
+
+### Center of Mass Control
+
+The center of mass (CoM) is a critical concept in humanoid robotics, as its position relative to the support polygon determines the robot's stability. The CoM is calculated as the weighted average of all masses in the system, and its dynamics are governed by the net external forces acting on the robot: mẍ_com = ΣF_ext.
+
+For balance control, humanoid robots must maintain the CoM within the support polygon defined by the contact points with the ground. This requires coordinated control of all joints to shift the CoM while maintaining the desired posture. The linear inverted pendulum model (LIPM) approximates the CoM dynamics as a point mass supported by a variable-length pendulum, simplifying balance control.
+
+### Zero Moment Point (ZMP) Theory
+
+The Zero Moment Point (ZMP) is a critical concept in humanoid locomotion that determines the point where the net moment of the ground reaction forces equals zero. For stable walking, the ZMP must remain within the support polygon. The ZMP is calculated as: ZMP_x = (x_com - x_g) - (h/g)(ẍ_com - ẍ_g), where h is the CoM height, g is gravity, and subscripts denote CoM and ground projections.
+
+ZMP-based control involves planning the CoM trajectory to ensure the ZMP remains within the support polygon. This approach has been successfully used in many humanoid robots but requires careful planning of the walking pattern and CoM motion.
+
+### Balance Control Strategies
+
+Balance control in humanoid robots employs multiple strategies depending on the perturbation magnitude and context. Ankle strategies involve small adjustments at the ankle joints to maintain balance with minimal upper body movement. Hip strategies engage hip joints to shift the CoM more significantly. Stepping strategies involve taking a step to expand the support polygon when other strategies are insufficient.
+
+Advanced balance control uses whole-body approaches that coordinate all available degrees of freedom to maintain stability. Model Predictive Control (MPC) can optimize the balance strategy over a prediction horizon, considering the robot's dynamics and constraints.
+
+### Walking Gait Generation
+
+Humanoid walking involves generating periodic motion patterns that maintain balance while achieving forward progression. The double-support phase occurs when both feet are in contact with the ground, providing maximum stability. The single-support phase occurs when only one foot contacts the ground, requiring active balance control.
+
+Walking pattern generation often uses predefined joint trajectories based on human walking data or optimization of dynamic criteria. The hip trajectory is planned to maintain balance, while the foot trajectories ensure proper ground clearance and stable contact.
+
+### Stability Analysis Methods
+
+Stability analysis for humanoid robots involves multiple approaches. Lyapunov stability theory provides mathematical guarantees for stability, but is challenging to apply to complex humanoid dynamics. Linearization around equilibrium points allows analysis using eigenvalue methods. Simulation-based approaches test stability under various perturbations.
+
+### Whole-Body Control Frameworks
+
+Whole-body control frameworks coordinate all available degrees of freedom to achieve multiple tasks simultaneously. These frameworks formulate the control problem as an optimization problem with prioritized tasks. The control allocation considers the robot's dynamics, joint limits, and actuator constraints to generate optimal joint commands.
+
+## Diagram
+
+```
+Humanoid Robot Structure:
+                    Head
+                     |
+              [Torso/Trunk]
+              /           \
+         [Left Arm]    [Right Arm]
+         /    |          |    \
+      [Hip]  [Shoulder] [Shoulder]  [Hip]
+       |        |          |        |
+    [Left Leg] [Elbow]    [Elbow] [Right Leg]
+       |        |          |        |
+    [Ankle]  [Wrist]    [Wrist]  [Ankle]
+       |        |          |        |
+    [Left Foot]            [Right Foot]
+
+Balance Control:
+CoM (Center of Mass) must stay within Support Polygon
+defined by contact points with ground.
+
+Support Polygon
+┌─────────────────┐
+│     CoM         │ ←─ Stable if CoM inside
+│    (●)          │
+└─────────────────┘
+  Left Foot   Right Foot
+```
+
+## Practical Example
+
+Consider a humanoid robot learning to stand up after being pushed. The robot uses a whole-body controller that prioritizes balance maintenance above all other tasks. When pushed, the controller immediately calculates the new CoM position and velocity. If the ZMP is moving outside the support polygon, the controller activates balance strategies in order of preference: first ankle strategy for small perturbations, then hip strategy for larger ones, and finally stepping strategy for large disturbances.
+
+The controller uses a simplified inverted pendulum model to predict the CoM motion and generates corrective joint torques to shift the CoM back within the support polygon. For a forward push, the robot shifts its weight to the heels using ankle torques. For a lateral push, hip and ankle torques work together to shift the CoM in the opposite direction. If the push is too large for these strategies, the robot takes a step in the direction of the push to expand the support polygon.
+
+## Summary
+
+Humanoid robotics requires sophisticated mathematical models for kinematics, dynamics, balance, and locomotion. Forward and inverse kinematics enable the robot to relate joint angles to end-effector positions and vice versa. Dynamic modeling using Lagrangian mechanics captures the complex interactions between joints. Balance control relies on concepts like center of mass and Zero Moment Point to maintain stability. Walking gait generation creates periodic patterns for locomotion. Successful humanoid control requires integrating all these concepts into whole-body control frameworks that can handle the high degrees of freedom and real-time constraints of physical systems.
+
+## Glossary
+
+- **Forward Kinematics**: The process of determining the position and orientation of end-effectors based on joint angles.
+- **Inverse Kinematics**: The process of determining joint angles required to achieve desired end-effector positions and orientations.
+- **Center of Mass (CoM)**: The weighted average position of all masses in the system, critical for balance control.
+- **Zero Moment Point (ZMP)**: The point where the net moment of ground reaction forces equals zero, used for stability analysis.
+- **Linear Inverted Pendulum Model (LIPM)**: A simplified model treating the CoM as a point mass on a variable-length pendulum.
+- **Support Polygon**: The convex hull of all contact points with the ground, where the CoM must remain for stability.
+- **Whole-Body Control**: A control approach that coordinates all available degrees of freedom to achieve multiple tasks simultaneously.
+- **Model Predictive Control (MPC)**: A control strategy that optimizes future actions over a prediction horizon.
+
+## MCQs
+
+1. What does the Zero Moment Point (ZMP) represent in humanoid robotics?
+   - A) The point of maximum joint torque
+   - B) The point where net moment of ground reaction forces equals zero
+   - C) The center of the robot's feet
+   - D) The location of the robot's battery
+   **Answer: B**
+
+2. Which kinematic problem determines end-effector positions from joint angles?
+   - A) Inverse kinematics
+   - B) Dynamic modeling
+   - C) Forward kinematics
+   - D) Balance control
+   **Answer: C**
+
+3. What is the primary purpose of the Linear Inverted Pendulum Model (LIPM)?
+   - A) To control individual joints
+   - B) To simplify CoM dynamics for balance control
+   - C) To plan walking trajectories
+   - D) To calculate joint torques
+   **Answer: B**
+
+4. Which balance strategy involves taking a step to expand the support polygon?
+   - A) Ankle strategy
+   - B) Hip strategy
+   - C) Stepping strategy
+   - D) Whole-body strategy
+   **Answer: C**
+
+5. In the dynamic equation M(q)q̈ + C(q, q̇)q̇ + G(q) = τ, what does M(q) represent?
+   - A) The Coriolis matrix
+   - B) The gravity vector
+   - C) The mass matrix
+   - D) The torque vector
+   **Answer: C**
