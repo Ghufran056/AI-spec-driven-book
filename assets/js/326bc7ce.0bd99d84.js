@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkai_driven_book=globalThis.webpackChunkai_driven_book||[]).push([[4814],{8584:o=>{o.exports=JSON.parse('{"metadata":{"permalink":"/AI-spec-driven-book/blog","page":1,"postsPerPage":10,"totalPages":1,"totalCount":4,"blogDescription":"Blog","blogTitle":"Blog"}}')}}]);
