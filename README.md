@@ -10,7 +10,7 @@ The project provides a modern documentation website along with an embedded AI ch
 https://ghufran056.github.io/AI-spec-driven-book
 
 🤖 Backend API:
-https://rag-chatbot-l6uo.onrender.com
+https://github.com/Ghufran056/rag-chatbot
 
 ---
 
